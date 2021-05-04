@@ -1,160 +1,154 @@
-const users = [
-  {
-    firstName: 'Test',
-    lastName: 'Testovich',
-    image: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500&quot;,ttps://www.kp.ru/share/i/12/10604075/ttps://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500&quot',
-  },
+'use strict';
+const { Component } = React;
 
-  {
-    firstName: 'Ilon',
-    lastName: 'Mask',
-    image: 'https://image.cnbcfm.com/api/v1/image/105439429-1536353186931screen-shot-2018-09-07-at-4.45.51-pm.jpg?v=1536353260&w=1600&h=900',
-  },
-  {
-    firstName: '',
-    lastName: '',
-  },
-  {
-    firstName: 'Jony',
-    lastName: 'Depp',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpo-Ymw6orpXA8AGXd2Mr2tJtphj5t4Uii6YbqIdsGkk8nOplRSFh_01xZ9H4uOEUHTqA&usqp=CAU',
-  },
-  {
-    firstName: 'Arnold',
-    lastName: 'Schwarzenegger',
-    image: 'https://images-na.ssl-images-amazon.com/images/I/61u07onB8yL._AC_SX466_.jpg',
-  },
-];
+const todoItem = {
+  text: 'sldflksdf',
+  isDone: false,
+};
 
-/**
- * Component - base class
- *  this.props
- *  this.state
- *  this.setState
- * createElement - create React-elem
- */
-
-class UserCard extends React.Component {
+class TodoListItem extends Component {
   render() {
-    const { user } = this.props;
-    const { firstName, lastName } = user;
+    const { todo: { text, isDone } } = this.props;
     return (
       React.createElement(
-        'article',
+        'li',
         {
-          className: 'card',
+          style: {
+            textDecoration: isDone ? 'line-through' : 'initial',
+            color: isDone ? 'gray' : 'initial',
+          },
         },
-        React.createElement(
-          'div',
-          {
-            className: 'image-wrapper',
-          },
-          React.createElement(
-            'h3',
-            {
-              className: 'image-placeholder',
-            },
-            `${firstName[0] || ''}${lastName[0] || ''}`,
-          ),
-        ),
-        React.createElement(
-          'h1',
-          {
-            className: 'name',
-          },
-          `${firstName} ${lastName}`,
-        ),
+        text,
+        React.createElement('input', {
+          type: 'checkbox',
+          checked: isDone,
+        }),
       )
     );
   }
 }
 
-class Counter extends React.Component {
+class TodoList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: 0,
+      todos: [
+        {
+          id: 1,
+          text: 'Todo item 1',
+          isDone: false,
+        },
+        {
+          id: 2,
+          text: 'sdfasdasd 2',
+          isDone: true,
+        },
+        {
+          id: 3,
+          text: 'sdfasdasd 3',
+          isDone: false,
+        },
+        {
+          id: 4,
+          text: 'sdasdfasd 4',
+          isDone: false,
+        },
+        {
+          id: 5,
+          text: 'sdfassdfsfhd 5',
+          isDone: true,
+        },
+        {
+          id: 6,
+          text: 'sdfasd 6',
+          isDone: false,
+        },
+      ],
     };
   }
 
-  decrement = () => {
-    const { value } = this.state;
-    const { step } = this.props;
+  render() {
+    const { todos } = this.state;
+    const todoListItems = todos.map((todo) => (
+      React.createElement(TodoListItem, {
+        key: todo.id,
+        todo,
+      })
+    ));
+    return (
+      React.createElement(
+        'ul',
+        null,
+        todoListItems,
+      )
+    );
+  }
+}
+
+class TodoForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: '',
+    };
+  }
+
+  onChangeHandler = (e) => {
+    const { target: { value } } = e;
     this.setState({
-      value: value - step,
+      value,
     });
+    e.stopPropagation();
   };
 
-  increment = () => {
-    const { value } = this.state;
-    const { step } = this.props;
-    this.setState({
-      value: value + step,
-    });
+  onSubmitHandler = () => {
+    alert(this.state.value);
   };
 
   render() {
     const { value } = this.state;
-    console.log('RENDER');
+
     return (
       React.createElement(
-        'article',
-        {},
+        'form',
+        {
+          onSubmit: this.onSubmitHandler,
+        },
         React.createElement(
-          'h1',
+          'input',
           {
-            style: {
-              textAlign: 'center',
-              fontSize: '60px',
-            },
+            type: 'text',
+            value,
+            placeholder: 'todo text',
+            onChange: this.onChangeHandler,
           },
-          value,
         ),
         React.createElement(
-          'div',
-          {},
-          React.createElement(
-            'button',
-            {
-              onClick: this.decrement,
-            },
-            '-',
-          ),
-          React.createElement(
-            'button',
-            {
-              onClick: this.increment,
-            },
-            '+',
-          ),
+          'button',
+          {
+            type: 'submit',
+          },
+          'Add',
         ),
       )
     );
   }
+}
 
+class TodoApp extends Component {
+  render() {
+    return (
+      React.createElement(
+        'article',
+        null,
+        React.createElement(TodoForm),
+        React.createElement(TodoList),
+      )
+    );
+  }
 }
 
 ReactDOM.render(
-  users.map((user) => React.createElement(UserCard, { user })),
-  document.getElementById('users'),
+  React.createElement(TodoApp),
+  document.getElementById('root'),
 );
-
-ReactDOM.render(
-  React.createElement(
-    Counter,
-    {
-      step: 18,
-    },
-  ),
-  document.getElementById('counter'),
-);
-
-
-console.log(userComponents);
-console.group('REACT');
-console.dir(React);
-console.groupEnd();
-
-console.group('REACTDOM');
-console.dir(ReactDOM);
-console.groupEnd();
